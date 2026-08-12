@@ -14,9 +14,11 @@ interface ShirtModelProps {
   canSign: boolean;
   mode: "draw" | "move";
   userId: string;
+  customText?: string;
+  customDesign?: string;
 }
 
-export function ShirtModel({ penColor, penSize, setIsDrawing, canSign, mode, userId }: ShirtModelProps) {
+export function ShirtModel({ penColor, penSize, setIsDrawing, canSign, mode, userId, customText, customDesign }: ShirtModelProps) {
   const { nodes, materials } = useGLTF("/shirt_baked.glb") as any;
   const meshRef = useRef<THREE.Mesh>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -43,14 +45,16 @@ export function ShirtModel({ penColor, penSize, setIsDrawing, canSign, mode, use
     // Create texture and configure it
     const texture = new THREE.CanvasTexture(canvas);
     texture.colorSpace = THREE.SRGBColorSpace;
-    // Important: Prevent the texture from repeating or wrapping
     texture.wrapS = THREE.ClampToEdgeWrapping;
     texture.wrapT = THREE.ClampToEdgeWrapping;
     
     textureRef.current = texture;
     setTextureReady(true);
+  }, []);
 
+  useEffect(() => {
     // Create a separate canvas texture for the permanent text (Decal)
+    const textToRender = customText || "Ògo nifún Krístì";
     const decalCanvas = document.createElement("canvas");
     decalCanvas.width = 1024;
     decalCanvas.height = 512; // wider for text
@@ -61,7 +65,7 @@ export function ShirtModel({ penColor, penSize, setIsDrawing, canSign, mode, use
         dctx.fillStyle = "#000000";
         dctx.textAlign = "center";
         dctx.textBaseline = "middle";
-        dctx.fillText("Ògo nifún Krístì", decalCanvas.width / 2, decalCanvas.height / 2);
+        dctx.fillText(textToRender, decalCanvas.width / 2, decalCanvas.height / 2);
         
         const dTex = new THREE.CanvasTexture(decalCanvas);
         dTex.colorSpace = THREE.SRGBColorSpace;
@@ -69,10 +73,13 @@ export function ShirtModel({ penColor, penSize, setIsDrawing, canSign, mode, use
         setDecalTexture(dTex);
       });
     }
+  }, [customText]);
 
-    // Process glory illustration to remove white background
+  useEffect(() => {
+    // Process illustration to remove white background
+    const designToRender = customDesign || "glory.png";
     const img = new Image();
-    img.src = "/glory.png";
+    img.src = `/${designToRender}`;
     img.onload = () => {
       const gCanvas = document.createElement("canvas");
       gCanvas.width = img.width;
@@ -105,7 +112,7 @@ export function ShirtModel({ penColor, penSize, setIsDrawing, canSign, mode, use
         setGloryTexture(gTex);
       }
     };
-  }, []);
+  }, [customDesign]);
 
   // Firebase Real-time Listener
   useEffect(() => {

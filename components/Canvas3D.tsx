@@ -10,6 +10,8 @@ interface Canvas3DProps {
   penColor: string;
   penSize: number;
   userId: string;
+  customText?: string;
+  customDesign?: string;
 }
 
 function ZoomTracker({ setCanSign }: { setCanSign: (val: boolean) => void }) {
@@ -26,7 +28,7 @@ function ZoomTracker({ setCanSign }: { setCanSign: (val: boolean) => void }) {
   return null;
 }
 
-export function Canvas3D({ penColor, penSize, userId }: Canvas3DProps) {
+export function Canvas3D({ penColor, penSize, userId, customText, customDesign }: Canvas3DProps) {
   const [isDrawing, setIsDrawing] = useState(false);
   const [canSign, setCanSign] = useState(false);
   const [mode, setMode] = useState<"draw" | "move">("draw");
@@ -40,7 +42,7 @@ export function Canvas3D({ penColor, penSize, userId }: Canvas3DProps) {
         <ZoomTracker setCanSign={setCanSign} />
         
         <Suspense fallback={null}>
-          <ShirtModel penColor={penColor} penSize={penSize} setIsDrawing={setIsDrawing} canSign={canSign} mode={mode} userId={userId} />
+          <ShirtModel penColor={penColor} penSize={penSize} setIsDrawing={setIsDrawing} canSign={canSign} mode={mode} userId={userId} customText={customText} customDesign={customDesign} />
           <Environment preset="city" />
           <ContactShadows position={[0, -2.5, 0]} opacity={0.5} scale={10} blur={2} far={4} />
         </Suspense>
