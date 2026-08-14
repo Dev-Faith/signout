@@ -14,6 +14,10 @@ import { Sparkles, ArrowRight } from "lucide-react";
 export default function ShirtPage({ params }: { params: Promise<{ userId: string }> }) {
   const [penColor, setPenColor] = useState("#6B21A8"); // Default to Deep Purple
   const [penSize, setPenSize] = useState(5); // Default pen size
+  const [isEraser, setIsEraser] = useState(false);
+  const [undoTrigger, setUndoTrigger] = useState(0);
+  const [authorId, setAuthorId] = useState<string>("");
+
   const { userId } = use(params);
   const { user } = useAuth();
   const isOwner = user?.uid === userId;
@@ -21,6 +25,20 @@ export default function ShirtPage({ params }: { params: Promise<{ userId: string
   const [customText, setCustomText] = useState("Class of 2026");
   const [customDesign, setCustomDesign] = useState("glory.png");
   const [ownerName, setOwnerName] = useState("");
+
+  useEffect(() => {
+    // Establish identity
+    if (user?.uid) {
+      setAuthorId(user.uid);
+    } else {
+      let localId = localStorage.getItem("guestAuthorId");
+      if (!localId) {
+        localId = "guest_" + Math.random().toString(36).substring(2, 11);
+        localStorage.setItem("guestAuthorId", localId);
+      }
+      setAuthorId(localId);
+    }
+  }, [user]);
 
   useEffect(() => {
     async function fetchConfig() {
@@ -44,11 +62,28 @@ export default function ShirtPage({ params }: { params: Promise<{ userId: string
     <main className="w-full h-[100dvh] overflow-hidden relative selection:bg-primary/20">
       <Header userId={userId} isOwner={isOwner} ownerName={ownerName} />
       
-      <ColorPicker penColor={penColor} setPenColor={setPenColor} penSize={penSize} setPenSize={setPenSize} />
+      <ColorPicker 
+        penColor={penColor} 
+        setPenColor={setPenColor} 
+        penSize={penSize} 
+        setPenSize={setPenSize}
+        isEraser={isEraser}
+        setIsEraser={setIsEraser}
+        onUndo={() => setUndoTrigger(prev => prev + 1)}
+      />
       
       {/* 3D Canvas Area */}
       <div className="w-full h-full">
-        <Canvas3D penColor={penColor} penSize={penSize} userId={userId} customText={customText} customDesign={customDesign} />
+        <Canvas3D 
+          penColor={penColor} 
+          penSize={penSize} 
+          userId={userId} 
+          customText={customText} 
+          customDesign={customDesign}
+          isEraser={isEraser}
+          undoTrigger={undoTrigger}
+          authorId={authorId}
+        />
       </div>
 
       {/* Visitor CTA */}

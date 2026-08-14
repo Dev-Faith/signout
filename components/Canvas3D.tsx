@@ -12,6 +12,9 @@ interface Canvas3DProps {
   userId: string;
   customText?: string;
   customDesign?: string;
+  isEraser?: boolean;
+  undoTrigger?: number;
+  authorId?: string;
 }
 
 function ZoomTracker({ setCanSign }: { setCanSign: (val: boolean) => void }) {
@@ -28,7 +31,7 @@ function ZoomTracker({ setCanSign }: { setCanSign: (val: boolean) => void }) {
   return null;
 }
 
-export function Canvas3D({ penColor, penSize, userId, customText, customDesign }: Canvas3DProps) {
+export function Canvas3D({ penColor, penSize, userId, customText, customDesign, isEraser, undoTrigger, authorId }: Canvas3DProps) {
   const [isDrawing, setIsDrawing] = useState(false);
   const [canSign, setCanSign] = useState(false);
   const [mode, setMode] = useState<"draw" | "move">("draw");
@@ -36,19 +39,32 @@ export function Canvas3D({ penColor, penSize, userId, customText, customDesign }
   return (
     <div className="w-full h-full relative">
       <Canvas id="shirt-3d-canvas" shadows camera={{ position: [0, 0, 6], fov: 45 }} gl={{ preserveDrawingBuffer: true }}>
-        <ambientLight intensity={0.5} />
-        <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={1} castShadow />
+        <ambientLight intensity={0.6} />
+        <spotLight position={[10, 10, 10]} angle={0.2} penumbra={1} intensity={1.5} castShadow />
+        <spotLight position={[-10, 5, 10]} angle={0.2} penumbra={1} intensity={0.5} color="#c084fc" />
         
         <ZoomTracker setCanSign={setCanSign} />
         
         <Suspense fallback={null}>
-          <ShirtModel penColor={penColor} penSize={penSize} setIsDrawing={setIsDrawing} canSign={canSign} mode={mode} userId={userId} customText={customText} customDesign={customDesign} />
+          <ShirtModel 
+            penColor={penColor} 
+            penSize={penSize} 
+            setIsDrawing={setIsDrawing} 
+            canSign={canSign} 
+            mode={mode} 
+            userId={userId}
+            customText={customText}
+            customDesign={customDesign}
+            isEraser={isEraser}
+            undoTrigger={undoTrigger}
+            authorId={authorId}
+          />
           <Environment preset="city" />
           <ContactShadows position={[0, -2.5, 0]} opacity={0.5} scale={10} blur={2} far={4} />
         </Suspense>
 
         <OrbitControls 
-          enabled={!isDrawing}
+          enabled={mode === "move"}
           enablePan={true} 
           enableZoom={true} 
           minDistance={1} 
@@ -87,7 +103,7 @@ export function Canvas3D({ penColor, penSize, userId, customText, customDesign }
 
       <div className={`absolute top-24 md:top-auto md:bottom-8 left-1/2 -translate-x-1/2 text-xs md:text-sm font-bold md:font-medium backdrop-blur-sm px-4 py-2 md:px-6 md:py-3 rounded-full pointer-events-none transition-colors duration-300 shadow-lg z-20 whitespace-nowrap ${canSign ? 'bg-green-500/90 text-white' : 'bg-rose-500/90 text-white'}`}>
         <span className="hidden md:inline">{canSign ? "✍️ Draw on the shirt!" : "🔍 Zoom in closer to sign!"}</span>
-        <span className="inline md:hidden">{canSign ? "✍️ Draw on shirt!" : "🔍 Pinch to zoom in!"}</span>
+        <span className="inline md:hidden">{canSign ? "✍️ Draw on shirt!" : "🔍 Pinch to zoom in closer and sign"}</span>
       </div>
     </div>
   );
