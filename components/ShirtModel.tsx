@@ -281,7 +281,7 @@ export function ShirtModel({ penColor, penSize, setIsDrawing, canSign, mode, use
           metalness={0.1}
         />
         {decalTexture && (
-          <Decal position={[0, 0.07, 0.14]} rotation={[0, 0, 0]} scale={[0.22, 0.11, 0.22]}>
+          <Decal raycast={() => null} position={[0, 0.07, 0.14]} rotation={[0, 0, 0]} scale={[0.22, 0.11, 0.22]}>
             <meshStandardMaterial
               map={decalTexture}
               transparent
@@ -293,7 +293,7 @@ export function ShirtModel({ penColor, penSize, setIsDrawing, canSign, mode, use
           </Decal>
         )}
         {gloryTexture && (
-          <Decal position={[0, -0.01, 0.16]} rotation={[0, 0, 0]} scale={[0.18, 0.18, 0.18]}>
+          <Decal raycast={() => null} position={[0, -0.01, 0.16]} rotation={[0, 0, 0]} scale={[0.18, 0.18, 0.18]}>
             <meshStandardMaterial
               map={gloryTexture}
               transparent

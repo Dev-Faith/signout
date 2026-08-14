@@ -9,7 +9,7 @@ import { useAuth } from "@/components/AuthProvider";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import Link from "next/link";
-import { Sparkles } from "lucide-react";
+import { Sparkles, ArrowRight } from "lucide-react";
 
 export default function ShirtPage({ params }: { params: Promise<{ userId: string }> }) {
   const [penColor, setPenColor] = useState("#6B21A8"); // Default to Deep Purple
@@ -18,8 +18,9 @@ export default function ShirtPage({ params }: { params: Promise<{ userId: string
   const { user } = useAuth();
   const isOwner = user?.uid === userId;
   
-  const [customText, setCustomText] = useState("Ògo nifún Krístì");
+  const [customText, setCustomText] = useState("Class of 2026");
   const [customDesign, setCustomDesign] = useState("glory.png");
+  const [ownerName, setOwnerName] = useState("");
 
   useEffect(() => {
     async function fetchConfig() {
@@ -30,6 +31,7 @@ export default function ShirtPage({ params }: { params: Promise<{ userId: string
           const data = docSnap.data();
           if (data.text) setCustomText(data.text);
           if (data.design) setCustomDesign(data.design);
+          if (data.ownerName) setOwnerName(data.ownerName);
         }
       } catch (e) {
         console.error("Error fetching shirt config", e);
@@ -39,8 +41,8 @@ export default function ShirtPage({ params }: { params: Promise<{ userId: string
   }, [userId]);
 
   return (
-    <main className="w-full h-screen overflow-hidden relative selection:bg-primary/20">
-      <Header userId={userId} isOwner={isOwner} />
+    <main className="w-full h-[100dvh] overflow-hidden relative selection:bg-primary/20">
+      <Header userId={userId} isOwner={isOwner} ownerName={ownerName} />
       
       <ColorPicker penColor={penColor} setPenColor={setPenColor} penSize={penSize} setPenSize={setPenSize} />
       
@@ -51,16 +53,14 @@ export default function ShirtPage({ params }: { params: Promise<{ userId: string
 
       {/* Visitor CTA */}
       {!isOwner && (
-        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-40 animate-bounce hover:animate-none">
-          <Link href="/" className="glass-panel px-6 py-3 rounded-full flex items-center gap-3 shadow-xl border-white/50 hover:scale-105 transition-all duration-300 group bg-primary/90 text-white backdrop-blur-md">
-            <Sparkles className="w-5 h-5 text-yellow-300" />
-            <span className="font-bold text-sm tracking-wide text-black">Want your own 3D Signout Shirt? Create one for free!</span>
-            <div className="bg-white/40 rounded-full p-1 group-hover:bg-white/60 transition-colors text-black">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="m9 18 6-6-6-6"/>
-              </svg>
-            </div>
-          </Link>
+        <div className="absolute bottom-40 md:bottom-10 w-[90%] md:w-auto left-1/2 -translate-x-1/2 z-40">
+          <div className="animate-bounce hover:animate-none">
+            <Link href="/" className="glass-panel px-4 py-2.5 md:px-6 md:py-3 rounded-full flex items-center justify-between md:justify-center gap-2 md:gap-3 shadow-xl border-white/50 hover:scale-105 transition-all duration-300 group whitespace-nowrap">
+              <Sparkles className="w-4 h-4 md:w-5 md:h-5 text-primary shrink-0" />
+              <span className="font-bold text-[10px] sm:text-xs md:text-sm tracking-wide text-slate-800 truncate">Want your own 3D Signout Shirt? Create one for free!</span>
+              <ArrowRight className="w-4 h-4 md:w-5 md:h-5 text-slate-800 group-hover:translate-x-1 transition-transform shrink-0" />
+            </Link>
+          </div>
         </div>
       )}
 
@@ -69,7 +69,7 @@ export default function ShirtPage({ params }: { params: Promise<{ userId: string
         href="https://muyiwa.dev" 
         target="_blank" 
         rel="noopener noreferrer"
-        className="absolute bottom-4 right-4 text-xs font-medium text-slate-500 hover:text-primary transition-colors bg-white/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/40 shadow-sm z-50 flex items-center gap-1.5"
+        className="absolute bottom-4 right-4 text-[10px] md:text-xs font-bold text-slate-500 hover:text-primary transition-colors bg-white/60 backdrop-blur-md px-2.5 py-1.5 md:px-3 md:py-1.5 rounded-full border border-white/40 shadow-sm z-50 flex items-center gap-1.5"
       >
         <span>Courtesy of Muyiwa</span>
         <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">

@@ -21,70 +21,51 @@ const COLORS = [
 
 export function ColorPicker({ penColor, setPenColor, penSize, setPenSize }: ColorPickerProps) {
   return (
-    <div className="absolute left-8 top-1/2 -translate-y-1/2 w-60 glass-panel p-5 flex flex-col gap-6 z-10 animate-fade-in shadow-2xl shadow-primary/10 border-white/40">
+    <div className="absolute left-1/2 -translate-x-1/2 bottom-24 md:bottom-auto md:left-8 md:translate-x-0 md:top-1/2 md:-translate-y-1/2 w-[95%] md:w-16 max-w-[400px] glass-panel p-2 md:p-3 flex flex-row md:flex-col items-center justify-between md:justify-start gap-2 md:gap-4 z-50 shadow-2xl shadow-primary/20 border-white/60 backdrop-blur-3xl bg-white/70 md:bg-white/50 rounded-3xl md:rounded-[2rem]">
       
-      {/* Header */}
-      <div className="flex items-center gap-2 border-b border-slate-200/60 pb-3">
-        <div className="bg-primary/10 p-1.5 rounded-lg shadow-inner">
-          <Palette className="w-4 h-4 text-primary" />
-        </div>
-        <h3 className="text-sm font-bold text-slate-800 tracking-wide">Toolkit</h3>
+      {/* Colors Section */}
+      <div className="flex flex-row md:flex-col items-center gap-1.5 md:gap-2 overflow-x-auto no-scrollbar py-2 px-2 flex-1 md:flex-none">
+        {COLORS.map((c) => (
+          <button
+            key={c.hex}
+            onClick={() => setPenColor(c.hex)}
+            className={`w-7 h-7 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all duration-300 shadow-sm shrink-0 ${
+              penColor === c.hex ? "ring-2 ring-offset-2 ring-primary scale-[1.25] md:scale-110 z-10" : "ring-1 ring-black/10 hover:scale-105"
+            }`}
+            style={{ backgroundColor: c.hex }}
+            title={c.name}
+            aria-label={`Select ${c.name} color`}
+          >
+            {penColor === c.hex && <Check className="w-3.5 h-3.5 md:w-5 md:h-5 text-white drop-shadow-md" />}
+          </button>
+        ))}
       </div>
 
-      {/* Colors Section */}
-      <div className="flex flex-col gap-3">
-        <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Color</span>
-        <div className="grid grid-cols-3 gap-3">
-          {COLORS.map((c) => (
-            <button
-              key={c.hex}
-              onClick={() => setPenColor(c.hex)}
-              className={`w-full aspect-square rounded-xl flex items-center justify-center transition-all duration-300 shadow-sm hover:scale-105 active:scale-95 ${
-                penColor === c.hex ? "ring-2 ring-offset-2 ring-primary scale-105" : "ring-1 ring-black/5 hover:ring-black/20"
-              }`}
-              style={{ backgroundColor: c.hex }}
-              title={c.name}
-              aria-label={`Select ${c.name} color`}
-            >
-              {penColor === c.hex && <Check className="w-5 h-5 text-white drop-shadow-md" />}
-            </button>
-          ))}
-        </div>
-      </div>
+      {/* Divider */}
+      <div className="w-[1px] h-6 md:w-8 md:h-[1px] bg-slate-300 rounded-full shrink-0" />
 
       {/* Thickness Section */}
-      <div className="flex flex-col gap-4 border-t border-slate-200/60 pt-5">
-        <div className="flex items-center justify-between">
-          <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
-            <PenLine className="w-3.5 h-3.5" /> Thickness
-          </span>
-          <div className="w-6 h-6 flex items-center justify-center bg-slate-100 rounded-full shadow-inner border border-slate-200/50">
-            <div 
-              className="rounded-full transition-all duration-200 shadow-sm" 
-              style={{ 
-                width: `${Math.max(4, penSize)}px`, 
-                height: `${Math.max(4, penSize)}px`,
-                backgroundColor: penColor
-              }}
-            />
-          </div>
+      <div className="flex flex-row md:flex-col items-center gap-2 md:gap-4 shrink-0 px-2 md:px-0 md:pb-2">
+        <div className="w-5 h-5 md:w-6 md:h-6 flex items-center justify-center bg-slate-100 rounded-full shadow-inner border border-slate-200/80 shrink-0">
+          <div 
+            className="rounded-full transition-all duration-200 shadow-sm" 
+            style={{ 
+              width: `${Math.max(2, penSize / 1.5)}px`, 
+              height: `${Math.max(2, penSize / 1.5)}px`,
+              backgroundColor: penColor
+            }}
+          />
         </div>
         
-        <div className="flex flex-col gap-1.5">
-          <input 
-            type="range" 
-            min="1" 
-            max="12" 
-            value={penSize} 
-            onChange={(e) => setPenSize(Number(e.target.value))}
-            className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-primary"
-            title="Adjust Pen Size"
-          />
-          <div className="flex justify-between text-[10px] font-semibold text-slate-400 px-0.5">
-            <span>Fine</span>
-            <span>Thick</span>
-          </div>
-        </div>
+        <input 
+          type="range" 
+          min="1" 
+          max="12" 
+          value={penSize} 
+          onChange={(e) => setPenSize(Number(e.target.value))}
+          className="vertical-slider-md w-16 md:w-1.5 md:h-24 h-1.5 bg-slate-300 rounded-full appearance-none cursor-pointer accent-primary"
+          title="Adjust Pen Size"
+        />
       </div>
       
     </div>
