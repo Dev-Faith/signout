@@ -19,9 +19,10 @@ interface ShirtModelProps {
   isEraser?: boolean;
   undoTrigger?: number;
   authorId?: string;
+  showNotification?: (msg: string) => void;
 }
 
-export function ShirtModel({ penColor, penSize, setIsDrawing, canSign, mode, userId, customText, customDesign, isEraser, undoTrigger, authorId }: ShirtModelProps) {
+export function ShirtModel({ penColor, penSize, setIsDrawing, canSign, mode, userId, customText, customDesign, isEraser, undoTrigger, authorId, showNotification }: ShirtModelProps) {
   const { nodes, materials } = useGLTF("/shirt_baked.glb") as any;
   const meshRef = useRef<THREE.Mesh>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -297,7 +298,16 @@ export function ShirtModel({ penColor, penSize, setIsDrawing, canSign, mode, use
   const handlePointerDown = (e: ThreeEvent<PointerEvent>) => {
     e.stopPropagation();
     if (e.button !== 0) return; 
-    if (!canSign || mode === "move") return; 
+    
+    if (mode === "move") {
+      showNotification?.("Switch to 'Draw' tool to write");
+      return;
+    }
+    
+    if (!canSign) {
+      showNotification?.("Zoom in first!");
+      return;
+    }
     
     const baseHit = e.intersections.find((hit) => hit.object === meshRef.current);
     if (baseHit && baseHit.uv) {

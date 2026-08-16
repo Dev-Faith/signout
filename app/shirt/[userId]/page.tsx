@@ -4,6 +4,7 @@ import React, { useState, use, useEffect } from "react";
 import { Header } from "@/components/Header";
 import { ColorPicker } from "@/components/ColorPicker";
 import { Canvas3D } from "@/components/Canvas3D";
+import { Walkthrough } from "@/components/Walkthrough";
 import { Loader } from "@react-three/drei";
 import { useAuth } from "@/components/AuthProvider";
 import { doc, getDoc } from "firebase/firestore";
@@ -58,8 +59,22 @@ export default function ShirtPage({ params }: { params: Promise<{ userId: string
     fetchConfig();
   }, [userId]);
 
+  // Handle Ctrl+Z (or Cmd+Z) for Undo
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
+        e.preventDefault();
+        setUndoTrigger(prev => prev + 1);
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   return (
     <main className="w-full h-[100dvh] overflow-hidden relative selection:bg-primary/20">
+      <Walkthrough ownerName={ownerName} />
       <Header userId={userId} isOwner={isOwner} ownerName={ownerName} />
       
       <ColorPicker 

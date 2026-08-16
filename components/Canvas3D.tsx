@@ -35,9 +35,29 @@ export function Canvas3D({ penColor, penSize, userId, customText, customDesign, 
   const [isDrawing, setIsDrawing] = useState(false);
   const [canSign, setCanSign] = useState(false);
   const [mode, setMode] = useState<"draw" | "move">("draw");
+  const [notification, setNotification] = useState<string | null>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const showNotification = (msg: string) => {
+    setNotification(msg);
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    timeoutRef.current = setTimeout(() => setNotification(null), 2500);
+  };
 
   return (
-    <div className="w-full h-full relative">
+    <div 
+      className="w-full h-full relative"
+      onWheel={(e) => {
+        if (mode !== "move") {
+          showNotification("Switch to 'Move' tool to zoom/pan");
+        }
+      }}
+      onTouchMove={(e) => {
+        if (mode !== "move" && e.touches.length > 1) {
+          showNotification("Switch to 'Move' tool to zoom/pan");
+        }
+      }}
+    >
       <Canvas id="shirt-3d-canvas" shadows camera={{ position: [0, 0, 6], fov: 45 }} gl={{ preserveDrawingBuffer: true }}>
         <ambientLight intensity={0.6} />
         <spotLight position={[10, 10, 10]} angle={0.2} penumbra={1} intensity={1.5} castShadow />
@@ -58,6 +78,7 @@ export function Canvas3D({ penColor, penSize, userId, customText, customDesign, 
             isEraser={isEraser}
             undoTrigger={undoTrigger}
             authorId={authorId}
+            showNotification={showNotification}
           />
           <Environment preset="city" />
           <ContactShadows position={[0, -2.5, 0]} opacity={0.5} scale={10} blur={2} far={4} />
@@ -74,7 +95,7 @@ export function Canvas3D({ penColor, penSize, userId, customText, customDesign, 
       </Canvas>
       
       {/* Action Bar (Replaces static tooltip) */}
-      <div className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 flex flex-col gap-2 md:gap-3 pointer-events-none z-20 animate-fade-in">
+      <div className="tour-action-bar absolute right-4 md:right-8 top-1/2 -translate-y-1/2 flex flex-col gap-2 md:gap-3 pointer-events-none z-20 animate-fade-in">
         <div className="glass-panel p-1 md:p-2 flex flex-col gap-1 md:gap-2 rounded-xl md:rounded-2xl shadow-2xl shadow-primary/10 border-white/40 pointer-events-auto">
           <button 
             onClick={() => setMode("draw")}
@@ -104,6 +125,11 @@ export function Canvas3D({ penColor, penSize, userId, customText, customDesign, 
       <div className={`absolute top-24 md:top-auto md:bottom-8 left-1/2 -translate-x-1/2 text-xs md:text-sm font-bold md:font-medium backdrop-blur-sm px-4 py-2 md:px-6 md:py-3 rounded-full pointer-events-none transition-colors duration-300 shadow-lg z-20 whitespace-nowrap ${canSign ? 'bg-green-500/90 text-white' : 'bg-rose-500/90 text-white'}`}>
         <span className="hidden md:inline">{canSign ? "✍️ Draw on the shirt!" : "🔍 Zoom in closer to sign!"}</span>
         <span className="inline md:hidden">{canSign ? "✍️ Draw on shirt!" : "🔍 Pinch to zoom in closer and sign"}</span>
+      </div>
+      
+      {/* Dynamic Action Notification */}
+      <div className={`absolute top-36 md:top-24 left-1/2 -translate-x-1/2 text-sm md:text-base font-bold bg-slate-900 text-white px-6 py-3 rounded-full shadow-2xl z-50 pointer-events-none transition-all duration-300 ${notification ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 -translate-y-4 scale-95'}`}>
+        {notification}
       </div>
     </div>
   );

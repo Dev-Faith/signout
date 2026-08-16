@@ -147,8 +147,13 @@ export function Header({ userId, isOwner, ownerName }: { userId: string, isOwner
           </h1>
           <p className="text-xs text-slate-500 font-medium">Leave a mark for my final year!</p>
         </div>
+        <div className="block md:hidden">
+          <h1 className="text-sm sm:text-base font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent truncate max-w-[100px] sm:max-w-[140px]">
+            {ownerName ? `${ownerName}'s` : "My"} Signout
+          </h1>
+        </div>
       </div>
-      <div className="flex items-center gap-2 md:gap-3 shrink-0">
+      <div className="tour-share-buttons flex items-center gap-2 md:gap-3 shrink-0">
         <button 
           onClick={handleDownload}
           disabled={isDownloading}

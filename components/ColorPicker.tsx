@@ -24,7 +24,7 @@ const COLORS = [
 
 export function ColorPicker({ penColor, setPenColor, penSize, setPenSize, isEraser, setIsEraser, onUndo }: ColorPickerProps) {
   return (
-    <div className="absolute left-1/2 -translate-x-1/2 bottom-24 md:bottom-auto md:left-8 md:translate-x-0 md:top-1/2 md:-translate-y-1/2 w-[95%] md:w-16 max-w-[400px] glass-panel p-2 md:p-3 flex flex-row md:flex-col items-center justify-between md:justify-start gap-2 md:gap-4 z-50 shadow-2xl shadow-primary/20 border-white/60 backdrop-blur-3xl bg-white/70 md:bg-white/50 rounded-3xl md:rounded-[2rem]">
+    <div className="tour-color-picker absolute left-1/2 -translate-x-1/2 bottom-24 md:bottom-auto md:left-8 md:translate-x-0 md:top-1/2 md:-translate-y-1/2 w-[95%] md:w-16 max-w-[400px] glass-panel p-2 md:p-3 flex flex-row md:flex-col items-center justify-between md:justify-start gap-2 md:gap-4 z-50 shadow-2xl shadow-primary/20 border-white/60 backdrop-blur-3xl bg-white/70 md:bg-white/50 rounded-3xl md:rounded-[2rem]">
       
       {/* Tools Section */}
       <div className="flex flex-row md:flex-col items-center gap-1.5 md:gap-2">
